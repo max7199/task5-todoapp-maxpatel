@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow | Modern To-Do App</title>
+  <meta name="description" content="A modern, professional To-Do list app with task management, priorities, due dates, times and localStorage persistence.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <main class="app-wrapper">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-top">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 11 12 14 22 4"></polyline>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            </svg>
+          </div>
+          <h1 class="brand-name">TaskFlow</h1>
+        </div>
+        <button class="new-task-btn" id="new-task-btn" aria-label="Create new task">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          New Task
+        </button>
+      </div>
+
+      <!-- Statistics -->
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card stat-total">
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Total</div>
+        </div>
+        <div class="stat-card stat-completed">
+          <div class="stat-value" id="stat-completed">0</div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card stat-pending">
+          <div class="stat-value" id="stat-pending">0</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card stat-overdue">
+          <div class="stat-value" id="stat-overdue">0</div>
+          <div class="stat-label">Overdue</div>
+        </div>
+      </div>
+
+      <!-- Search bar -->
+      <div class="search-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="search-input" class="search-input" placeholder="Search tasks..." autocomplete="off">
+        <button class="search-clear" id="search-clear" aria-label="Clear search" hidden>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Filter nav -->
+      <nav class="filter-nav" aria-label="Task filters">
+        <button class="filter-btn active" data-filter="all" id="filter-all">All</button>
+        <button class="filter-btn" data-filter="pending" id="filter-pending">Pending</button>
+        <button class="filter-btn" data-filter="completed" id="filter-completed">Completed</button>
+        <button class="filter-btn" data-filter="overdue" id="filter-overdue">Overdue</button>
+      </nav>
+    </header>
+
+    <!-- Tasks section -->
+    <section class="tasks-section" aria-label="Task list">
+      <ul class="task-list" id="task-list" role="list"></ul>
+
+      <div class="empty-state" id="empty-state" hidden>
+        <div class="empty-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <h3 class="empty-title" id="empty-title">No tasks yet</h3>
+        <p class="empty-subtitle" id="empty-subtitle">Click "New Task" to get started</p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer" id="app-footer" hidden>
+      <span id="total-count">0 tasks total</span>
+      <button class="clear-btn" id="clear-completed-btn">Clear Completed</button>
+    </footer>
+  </main>
+
+  <!-- Modal Overlay -->
+  <div class="modal-overlay" id="modal-overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">New Task</h2>
+        <button class="modal-close" id="modal-close" aria-label="Close modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="modal-task-name">Task Name <span class="required">*</span></label>
+          <input type="text" id="modal-task-name" class="form-input" placeholder="Enter task name..." maxlength="120" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="modal-task-desc">Description</label>
+          <textarea id="modal-task-desc" class="form-textarea" placeholder="Add a description..." rows="3" maxlength="400"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="modal-task-date">Due Date</label>
+            <input type="date" id="modal-task-date" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="modal-task-time">Time</label>
+            <input type="time" id="modal-task-time" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <div class="priority-group" role="group" aria-label="Priority selection">
+            <button type="button" class="priority-btn" data-priority="low" id="priority-low">
+              <span class="priority-dot"></span> Low
+            </button>
+            <button type="button" class="priority-btn active" data-priority="medium" id="priority-medium">
+              <span class="priority-dot"></span> Medium
+            </button>
+            <button type="button" class="priority-btn" data-priority="high" id="priority-high">
+              <span class="priority-dot"></span> High
+            </button>
+          </div>
+        </div>
+
+        <p class="modal-error" id="modal-error" role="alert"></p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" id="modal-cancel">Cancel</button>
+        <button class="btn-save" id="modal-save">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Save Task
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
