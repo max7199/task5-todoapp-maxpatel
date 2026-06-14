@@ -242,6 +242,10 @@
 
   // ─── Delete task ─────────────────────────────────────────────────────────────
   const deleteTask = (id, li) => {
+    // Ask the user to confirm before permanently removing the task
+    const confirmed = window.confirm('Are you sure you want to delete this task?');
+    if (!confirmed) return;
+
     li.classList.add('removing');
     li.addEventListener('animationend', () => {
       tasks = tasks.filter(t => t.id !== id);
